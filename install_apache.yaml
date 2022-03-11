@@ -1,0 +1,21 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: Update repository cache
+    yum:
+      update_cache: yes
+
+  - name: Install the apache2 package
+    yum:
+      name: httpd
+      state: latest
+
+  - name: Start httpd service
+    command: systemctl start httpd
+  
+  - name: Set httpd to start on boot
+    command: systemctl enable httpd.service
+
