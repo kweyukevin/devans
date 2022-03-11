@@ -7,15 +7,41 @@
   - name: Update repository cache
     yum:
       update_cache: yes
+    when: ansible_distribution == "Amazon"
+    #when: ansible_distribution in ["Amazon", "CentOS"] and ansible_distribution_version == "1.2"
 
   - name: Install the apache2 package
     yum:
       name: httpd
       state: latest
+    when: ansible_distribution == "Amazon"
 
   - name: Start httpd service
     command: systemctl start httpd
+    when: ansible_distribution == "Amazon"
   
   - name: Set httpd to start on boot
     command: systemctl enable httpd.service
+    when: ansible_distribution == "Amazon"
+
+#This task list is to target Ubuntu distro only
+  - name: Update repository cache
+    apt:
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+    #when: ansible_distribution in ["Amazon", "CentOS"] and ansible_distribution_version == "1.2"
+
+  - name: Install the apache2 package
+    apt:
+      name: apache2
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Start apache service
+    command: systemctl start apache2
+    when: ansible_distribution == "Ubuntu"
+  
+  - name: Set httpd to start on boot
+    command: systemctl enable apache2
+    when: ansible_distribution == "Ubuntu"
 

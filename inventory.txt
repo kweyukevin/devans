@@ -3,3 +3,4 @@
 #ansible-target-2 ansible_host=3.23.89.90 ansible_connection=ssh	ansible_user=ec2-user
 3.133.96.73
 3.23.89.90
+141.144.235.12 ansible_user=ubuntu
