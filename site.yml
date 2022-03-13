@@ -4,7 +4,26 @@
   become: true
   tasks:
 
+  - name: Install updates (Amazon Linux 2)
+    tags: always
+    yum:
+      update_only: yes
+      update_cache: yes
+    when: ansible_distribution == "Amazon"
+
+  - name: Install updates (Ubuntu)
+    tags: always
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: webservers
+  become: true
+  tasks:
+
   - name: Install the apache2 and PHP packages
+    tags: apache, apache2, amazon
     yum:
       name: 
         - httpd
@@ -14,16 +33,19 @@
     when: ansible_distribution == "Amazon"
 
   - name: Start httpd service
+    tags: apache,apache2,amazon
     command: systemctl start httpd
     when: ansible_distribution == "Amazon"
   
   - name: Set httpd to start on boot
+    tags: apache, apache2, amazon
     command: systemctl enable httpd.service
     when: ansible_distribution == "Amazon"
 
 #This task list is to target Ubuntu distro only
 
   - name: Install the apache2 amd php packages
+    tags: apache,apache2, ubuntu
     apt:
       name: 
         - apache2
@@ -34,10 +56,32 @@
     #when: ansible_distribution in ["Amazon", "CentOS"] and ansible_distribution_version == "1.2"
 
   - name: Start apache service
+    tags: apache, apache2, ubuntu
     command: systemctl start apache2
     when: ansible_distribution == "Ubuntu"
   
   - name: Set httpd to start on boot
+    tags: apache,apache2,ubuntu
     command: systemctl enable apache2
     when: ansible_distribution == "Ubuntu"
 
+- hosts: db_servers
+  become: true
+  tasks:
+
+  - name: Install mariadb package (Ubuntu)
+    tags: mariadb,ubuntu
+    apt:
+      name: mariadb-server
+      state: latest
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: file_servers
+  become: true
+  tasks:
+  
+  - name: Install samba package
+    tags: samba, ubuntu
+    package:
+      name: samba
+      state: latest
